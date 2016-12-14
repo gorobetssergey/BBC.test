@@ -13,7 +13,7 @@ class m161213_220946_create_table_user extends Migration
             'password' => $this->string(255)->notNull(),
             'old_password' => $this->string(255)->notNull(),
             'token' => $this->string(255)->notNull(),//for password recovery
-            'auth_key' => $this->string(255)->notNull(),//for login after ristions
+            'auth_key' => $this->string(255)->notNull(),//for login after registrations
             'role' => $this->integer()->defaultValue(1),
             'created' => $this->dateTime()->notNull(),
             'auth' => $this->boolean()->defaultValue(false),

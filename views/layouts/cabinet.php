@@ -36,23 +36,7 @@ AppAsset::register($this);
     ]);
 
     $menuItems = [];
-    if(Yii::$app->user->isGuest):
-        $menuItems =[
-            ['label' => 'Войти','url' => ['/site/login']],
-            ['label' => 'Регистрация','url' => ['/site/registration']]
-        ];
-    elseif (Yii::$app->user->identity->role==User::ROLE_USER):
-            $menuItems[] = [
-                'label' => 'Кабинет', 'url' => ['/cabinet/index'],
-            ];
-    elseif (Yii::$app->user->identity->role==User::ROLE_MODERATOR):
-            $menuItems[] = [
-                'label' => 'Панель Управения', 'url' => ['/moderation/index'],
-            ];
-    elseif (Yii::$app->user->identity->role==User::ROLE_ADMIN):
-            $menuItems[] = [
-                'label' => 'Админка', 'url' => ['/admin/index'],
-                ];
+    if (Yii::$app->user->identity->role==User::ROLE_USER):
         $menuItems[]=[
             'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',
             'url' => ['/site/logout'],

@@ -88,6 +88,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
+        var_dump(55);die();
         return $this->authKey === $authKey;
     }
 

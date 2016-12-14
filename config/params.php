@@ -1,5 +1,7 @@
 <?php
 
 return [
-    'adminEmail' => 'admin@example.com',
+    'adminEmail' => 'admin@bbc.com',
+    'supportEmail' => 'support@bbc.com',
+    'secretKeyExpire' => 60*60,
 ];

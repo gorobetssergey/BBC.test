@@ -9,6 +9,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\User;
+use yii\helpers\Url;
 
 class SiteController extends Controller
 {
@@ -70,16 +71,24 @@ class SiteController extends Controller
      *
      * @return string
      */
+    private function afterLogin()
+    {
+        $role = Yii::$app->user->identity->role;
+        if($role == User::ROLE_USER):
+            return $this->redirect(Url::toRoute('site/index'));
+        elseif ($role == User::ROLE_MODERATOR || $role == User::ROLE_ADMIN):
+            return $this->redirect(Url::toRoute('site/index'));
+        endif;
+    }
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
+        if (!Yii::$app->user->isGuest):
+            $this->afterLogin();
+        endif;
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
+        if ($model->load(Yii::$app->request->post()) && $model->login()):
+            $this->afterLogin();
+        endif;
         return $this->render('login', [
             'model' => $model,
         ]);
@@ -101,23 +110,27 @@ class SiteController extends Controller
     {
         $model = new User(['scenario' => 'registration']);
 
-        if(Yii::$app->request->isPost)
-        {
+        if(Yii::$app->request->isPost):
             $post = Yii::$app->request->post();
             if($model->load($post) && $model->validate()):
                 if($user = $model->registration()):
-                    Yii::$app->getSession()->setFlash('registration_ok', Yii::t('app', 'registration_ok'));
-                    if($user->auth === User::STATUS_AUTH ):
-                        if(Yii::$app->getUser()->login($user)):
-                            return $this->redirect('/site/index');
-                        endif;
-                    endif;
+                    Yii::$app->getSession()->setFlash('registration_ok', Yii::t('site', 'registration_ok'));
+                    return $this->render('registrationOk');
                 endif;
             endif;
-        }
+        endif;
 
         return $this->render('registration',[
             'model' => $model
         ]);
+    }
+    public function actionEmailConfirm($key)
+    {
+        $user = new User();
+        if(!$user->validateAuthKey($key)){
+            var_dump('error');
+                die();
+        }
+        return $this->redirect(Url::toRoute('cabinet/index'));
     }
 }
