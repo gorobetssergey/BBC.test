@@ -36,10 +36,26 @@ class CabinetController extends Controller
                 ],
 
             ];
+        }else{
+            return [
+                'access' => [
+                    'rules' => [
+                        [
+                            'actions' => [],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],
+            ];
         }
     }
 
     public function actionIndex()
+    {
+        return $this->render('index');
+    }
+    public function actionProfile()
     {
         return $this->render('index');
     }
