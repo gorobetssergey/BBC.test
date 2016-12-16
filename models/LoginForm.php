@@ -2,9 +2,9 @@
 
 namespace app\models;
 
+use app\models\User;
 use Yii;
 use yii\base\Model;
-use app\models\User;
 
 /**
  * LoginForm is the model behind the login form.
@@ -33,6 +33,7 @@ class LoginForm extends Model
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
+            ['username', 'checkVerificate'],
         ];
     }
 
@@ -43,6 +44,17 @@ class LoginForm extends Model
      * @param string $attribute the attribute currently being validated
      * @param array $params the additional name-value pairs given in the rule
      */
+    public function checkVerificate()
+    {
+        if($this->getUser()):
+            if($this->_user->verificate != User::IS_VERIFICATE):
+                $this->addError('username', 'Подтвердите свою почту');
+                return false;
+            endif;
+        endif;
+        return true;
+    }
+
     public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {

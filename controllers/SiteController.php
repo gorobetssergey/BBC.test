@@ -75,7 +75,7 @@ class SiteController extends Controller
     {
         $role = Yii::$app->user->identity->role;
         if($role == User::ROLE_USER):
-            return $this->redirect(Url::toRoute('site/index'));
+            return $this->redirect(Url::toRoute('cabinet/index'));
         elseif ($role == User::ROLE_MODERATOR || $role == User::ROLE_ADMIN):
             return $this->redirect(Url::toRoute('site/index'));
         endif;
