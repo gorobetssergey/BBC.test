@@ -65,7 +65,6 @@ class SiteController extends Controller
     {
         return $this->render('index');
     }
-
     /**
      * Login action.
      *
@@ -75,9 +74,11 @@ class SiteController extends Controller
     {
         $role = Yii::$app->user->identity->role;
         if($role == User::ROLE_USER):
+            User::auth(true);
             return $this->redirect(Url::toRoute('cabinet/index'));
         elseif ($role == User::ROLE_MODERATOR || $role == User::ROLE_ADMIN):
-            return $this->redirect(Url::toRoute('site/index'));
+            User::auth(true);
+            return $this->redirect(Url::toRoute('admin/index'));
         endif;
     }
     public function actionLogin()
@@ -101,6 +102,7 @@ class SiteController extends Controller
      */
     public function actionLogout()
     {
+        User::auth(false);
         Yii::$app->user->logout();
 
         return $this->goHome();

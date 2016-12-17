@@ -6,6 +6,7 @@ use Yii;
 use yii\db\Exception;
 use yii\web\IdentityInterface;
 use app\models\SendMail;
+use yii\data\ActiveDataProvider;
 
 /**
  * This is the model class for table "user".
@@ -56,7 +57,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return [
             [['email', 'password', 'old_password', 'token', 'auth_key', 'created'], 'required'],
             [['verificate', 'role', 'auth', 'login_error'], 'integer'],
-            [['created'], 'safe'],
+            [['created','auth'], 'safe'],
             [['email'], 'string', 'max' => 30],
             [['password', 'old_password', 'token', 'auth_key'], 'string', 'max' => 255],
             [['role'], 'exist', 'skipOnError' => true, 'targetClass' => Role::className(), 'targetAttribute' => ['role' => 'id']],
@@ -240,7 +241,22 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return null;
     }
 
-    public function af(){
-        var_dump(55);die();
+    public function getProvider()
+    {
+        $query = self::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => 25,
+            ],
+        ]);
+        return $dataProvider;
+    }
+    public static function auth($params)
+    {
+        $data = self::findOne(Yii::$app->user->identity->id);
+        $data->auth = ($params) ? self::IS_VERIFICATE : self::NO_VERIFICATE;
+        $data->update();
     }
 }

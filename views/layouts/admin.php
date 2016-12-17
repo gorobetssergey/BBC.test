@@ -7,10 +7,10 @@ use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
-use app\assets\AppAsset;
+use app\assets\AdminAsset;
 use app\models\User;
 
-AppAsset::register($this);
+AdminAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -34,33 +34,23 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-
     $menuItems = [];
-    if(Yii::$app->user->isGuest):
-        $menuItems =[
-            ['label' => 'Войти','url' => ['/site/login']],
-            ['label' => 'Регистрация','url' => ['/site/registration']]
-        ];
-    elseif (Yii::$app->user->identity->role==User::ROLE_USER):
-            $menuItems[] = [
-                'label' => 'Кабинет', 'url' => ['/cabinet/index'],
-            ];
-    elseif (Yii::$app->user->identity->role==User::ROLE_MODERATOR):
-            $menuItems[] = [
-                'label' => 'Панель Управения', 'url' => ['/admin/index'],
-            ];
-    elseif (Yii::$app->user->identity->role==User::ROLE_ADMIN):
-            $menuItems[] = [
-                'label' => 'Админка', 'url' => ['/admin/index'],
-                ];
-        $menuItems[]=[
-            'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',
-            'url' => ['/site/logout'],
-            'linkOptions' => [
-                'data-method' => 'post'
-            ]
-        ];
+    $menuItems =[
+        ['label' => 'Все новости','url' => ['/admin/news-all']],
+        ['label' => 'Добавить новость','url' => ['/admin/news-add']],
+        ['label' => 'Модерация','url' => ['/admin/moderation']]
+    ];
+    if (Yii::$app->user->identity->role==User::ROLE_ADMIN):
+        $menuItems[] =['label' => 'Пользователи','url' => ['/admin/users']];
     endif;
+    $menuItems[]=[
+        'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',
+        'url' => ['/site/logout'],
+        'linkOptions' => [
+            'data-method' => 'post'
+        ]
+    ];
+
 
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
@@ -70,9 +60,6 @@ AppAsset::register($this);
     ?>
 
     <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
         <?= $content ?>
     </div>
 </div>
