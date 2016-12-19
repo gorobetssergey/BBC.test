@@ -2,12 +2,15 @@
 
 namespace app\controllers;
 
+use app\models\News;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\models\User;
 use Yii;
 
+use yii\helpers\Url;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 class AdminController extends Controller
 {
@@ -20,7 +23,7 @@ class AdminController extends Controller
                     'rules' => [
                         [
                             'actions' => [
-                                'index', 'news-all', 'news-add', 'moderation', 'users'
+                                'index', 'news-all', 'news-add', 'moderation', 'users', 'view-news', 'update-news'
                             ],
                             'allow' => true,
                             'roles' => ['@'],
@@ -79,11 +82,26 @@ class AdminController extends Controller
     }
     public function actionNewsAll()
     {
-        return $this->render('newsAll');
+        $model = new News();
+        return $this->render('newsAll',[
+            'provider' => $model->getProvider()
+        ]);
     }
     public function actionNewsAdd()
     {
-        return $this->render('newsAdd');
+        $model = new News();
+        if(Yii::$app->request->isPost):
+            $post = Yii::$app->request->post();
+            if($model->load($post) && $model->save()):
+                Yii::$app->getSession()->setFlash('news_add_ok', Yii::t('site','news_add'));
+                return $this->refresh();
+            else:
+                Yii::$app->getSession()->setFlash('news_add_no', Yii::t('site','news_add_err'));
+            endif;
+        endif;
+        return $this->render('newsAdd',[
+            'model' => $model
+        ]);
     }
     public function actionModeration()
     {
@@ -94,6 +112,46 @@ class AdminController extends Controller
         $model = new User();
         return $this->render('users',[
             'provider' => $model->getProvider()
+        ]);
+    }
+    protected function findModeNews($id)
+    {
+        if (($model = News::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+    public function actionViewNews($id)
+    {
+        $model = $this->findModeNews($id);
+        if(Yii::$app->request->isPost)
+        {$post = Yii::$app->request->post();
+            if($model->update()){
+                Yii::$app->getSession()->setFlash('news_add_ok', Yii::t('site','news_add'));
+            }else{
+                Yii::$app->getSession()->setFlash('err_update', 'измените значение');
+            }
+        }
+
+        return $this->render('viewNews', [
+            'model' => $model,
+        ]);
+    }
+    public function actionUpdateNews($id)
+    {
+        $model = $this->findModeNews($id);
+        if(Yii::$app->request->isPost)
+        {$post = Yii::$app->request->post();
+            if($model->update()){
+                Yii::$app->getSession()->setFlash('news_add_ok', Yii::t('site','news_add'));
+            }else{
+                Yii::$app->getSession()->setFlash('err_update', 'измените значение');
+            }
+        }
+
+        return $this->render('updateNews', [
+            'model' => $model,
         ]);
     }
 }
