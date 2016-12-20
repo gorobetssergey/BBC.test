@@ -37,6 +37,10 @@ AppAsset::register($this);
 
     $menuItems = [];
     if (Yii::$app->user->identity->role==User::ROLE_USER):
+        $menuItems =[
+            ['label' => 'Добавить новость','url' => ['/cabinet/news-add']],
+            ['label' => 'Мои новости','url' => ['/cabinet/news-self']],
+        ];
         $menuItems[]=[
             'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',
             'url' => ['/site/logout'],

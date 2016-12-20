@@ -259,4 +259,15 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         $data->auth = ($params) ? self::IS_VERIFICATE : self::NO_VERIFICATE;
         $data->update();
     }
+    public static function getStatus()
+    {
+        $user = Yii::$app->user->identity->role;
+        return ($user == self::ROLE_USER) ? false: true;
+    }
+    public function getEmail($id)
+    {
+        $user = self::findOne($id);
+
+        return ($user) ? $user->email : null;
+    }
 }

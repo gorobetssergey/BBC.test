@@ -11,7 +11,7 @@ use app\models\ContactForm;
 use app\models\User;
 use yii\helpers\Url;
 
-class SiteController extends Controller
+class SiteController extends BaseController
 {
     public $layout = 'site';
     /**
@@ -78,7 +78,7 @@ class SiteController extends Controller
             return $this->redirect(Url::toRoute('cabinet/index'));
         elseif ($role == User::ROLE_MODERATOR || $role == User::ROLE_ADMIN):
             User::auth(true);
-            return $this->redirect(Url::toRoute('admin/index'));
+            return $this->redirect(Url::toRoute('admin/news-all'));
         endif;
     }
     public function actionLogin()

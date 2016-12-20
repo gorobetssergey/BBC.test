@@ -2,14 +2,16 @@
 
 namespace app\controllers;
 
+use app\models\News;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\models\User;
 use Yii;
 
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
-class CabinetController extends Controller
+class CabinetController extends BaseController
 {
     public $layout = 'cabinet';
 
@@ -21,7 +23,7 @@ class CabinetController extends Controller
                     'rules' => [
                         [
                             'actions' => [
-                                'index'
+                                'index', 'news-add', 'news-self', 'view-news', 'update-news', 'delete-news'
                             ],
                             'allow' => true,
                             'roles' => ['@'],
@@ -55,8 +57,19 @@ class CabinetController extends Controller
     {
         return $this->render('index');
     }
-    public function actionProfile()
+    protected function findModeNews($id)
     {
-        return $this->render('index');
+        if (($model = News::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+    public function actionNewsSelf()
+    {
+        $model = new News();
+        return $this->render('../admin/newsAll',[
+            'provider' => $model->getProvider(false)
+        ]);
     }
 }

@@ -36,7 +36,7 @@ AdminAsset::register($this);
     ]);
     $menuItems = [];
     $menuItems =[
-        ['label' => 'Все новости','url' => ['/admin/news-all']],
+        ['label' => 'Новости','url' => ['/admin/news-all']],
         ['label' => 'Добавить новость','url' => ['/admin/news-add']],
         ['label' => 'Модерация','url' => ['/admin/moderation']]
     ];
@@ -46,9 +46,10 @@ AdminAsset::register($this);
     $menuItems[]=[
         'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',
         'url' => ['/site/logout'],
-        'linkOptions' => [
-            'data-method' => 'post'
-        ]
+        'linkOptions' => ['data-method' => 'post'],
+    ];
+    $menuItems[] = [
+        'label' => '(статус - '. Yii::t('site', Yii::$app->user->identity->role0->value).' )'
     ];
 
 
