@@ -47,8 +47,14 @@ class BaseController extends Controller
     public function actionViewNews($id)
     {
         $model = $this->findModeNews($id);
+        $params = [
+            'block' => ($model->status == News::NEWS_BLOCK) ? true : false,
+            'active' => ($model->status == News::NEWS_ACTIVE) ? true : false,
+            'new' => ($model->status == News::NEWS_NEW) ? true : false
+        ];
         return $this->render('viewNews', [
             'model' => $model,
+            'params' => $params
         ]);
     }
     public function actionUpdateNews($id)
@@ -86,5 +92,29 @@ class BaseController extends Controller
         endif;
 
         return $this->redirect(Url::toRoute('news-all'));
+    }
+    public function actionBlockNews($id)
+    {
+        $model = $this->findModeNews($id);
+        $model->status = News::NEWS_BLOCK;
+        if($model->update()):
+            Yii::$app->getSession()->setFlash('news_block_ok', Yii::t('site','news_block_ok'));
+            return $this->redirect(Url::toRoute('moderation'));
+        else:
+            Yii::$app->getSession()->setFlash('news_block_err', Yii::t('site','news_block_err'));
+            return $this->redirect(Url::toRoute('moderation'));
+        endif;
+    }
+    public function actionAllowNews($id)
+    {
+        $model = $this->findModeNews($id);
+        $model->status = News::NEWS_ACTIVE;
+        if($model->update()):
+            Yii::$app->getSession()->setFlash('news_allow_ok', Yii::t('site','news_allow_ok'));
+            return $this->redirect(Url::toRoute('news-all'));
+        else:
+            Yii::$app->getSession()->setFlash('news_allow_err', Yii::t('site','news_allow_err'));
+            return $this->redirect(Url::toRoute('news-all'));
+        endif;
     }
 }

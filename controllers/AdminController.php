@@ -16,15 +16,15 @@ class AdminController extends BaseController
 {
     public $layout = 'admin';
     public function behaviors() {
+        $action = ['index', 'news-all', 'news-add', 'moderation', 'view-news', 'update-news', 'delete-news', 'block-news', 'allow-news'];
         if(Yii::$app->user->identity->role==User::ROLE_ADMIN) {
+            $action[] = 'users';
             return [
                 'access' => [
                     'class' => AccessControl::className(),
                     'rules' => [
                         [
-                            'actions' => [
-                                'index', 'news-all', 'news-add', 'moderation', 'users', 'view-news', 'update-news', 'delete-news'
-                            ],
+                            'actions' => $action,
                             'allow' => true,
                             'roles' => ['@'],
                         ],
@@ -44,9 +44,7 @@ class AdminController extends BaseController
                     'class' => AccessControl::className(),
                     'rules' => [
                         [
-                            'actions' => [
-                                'index', 'news-all', 'news-add', 'moderation'
-                            ],
+                            'actions' => $action,
                             'allow' => true,
                             'roles' => ['@'],
                         ],
@@ -87,10 +85,6 @@ class AdminController extends BaseController
             'provider' => $model->getProvider(true)
         ]);
     }
-    public function actionModeration()
-    {
-        return $this->render('moderation');
-    }
     public function actionUsers()
     {
         $model = new User();
@@ -98,4 +92,12 @@ class AdminController extends BaseController
             'provider' => $model->getProvider()
         ]);
     }
+    public function actionModeration()
+    {
+        $model = new News();
+        return $this->render('moderation',[
+            'provider' => $model->getProvider(true,true)
+        ]);
+    }
+
 }
