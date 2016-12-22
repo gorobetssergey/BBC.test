@@ -1,5 +1,7 @@
 <?php
 use yii\grid\GridView;
+use yii\helpers\Url;
+use yii\helpers\Html;
 
 ?>
 <div class="row">
@@ -28,6 +30,21 @@ use yii\grid\GridView;
                     }
                 ],
                 'login_error',
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'header' => 'Заблокировать',
+                    'buttons' => [
+                        'view' => function ($model, $key, $index) {
+                            $url = Url::toRoute('user-block?id='.$key['id'].'');
+                            return Html::a('Заблокировать', $url, [
+                                'title' => \Yii::t('yii', 'Заблокировать'),
+                                'data-method' => 'post',
+                                'data-pjax' => '0',
+                            ]);
+                        }
+                    ],
+                    'template' => '{view}',
+                ],
             ],
         ]); ?>
     </div>

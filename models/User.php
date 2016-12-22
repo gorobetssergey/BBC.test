@@ -270,4 +270,22 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
 
         return ($user) ? $user->email : null;
     }
+    public static function isUser()
+    {
+        if(Yii::$app->user->identity->role == self::ROLE_USER)
+            return true;
+        return false;
+    }
+    public static function isAdmin()
+    {
+        if(Yii::$app->user->identity->role == self::ROLE_ADMIN)
+            return true;
+        return false;
+    }
+    public static function isModerator()
+    {
+        if(Yii::$app->user->identity->role == self::ROLE_MODERATOR)
+            return true;
+        return false;
+    }
 }

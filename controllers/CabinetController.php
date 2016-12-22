@@ -7,6 +7,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\models\User;
 use Yii;
+use yii\helpers\Url;
 
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -23,7 +24,7 @@ class CabinetController extends BaseController
                     'rules' => [
                         [
                             'actions' => [
-                                'index', 'news-add', 'news-self', 'view-news', 'update-news', 'delete-news'
+                                'index', 'news-add', 'news-self', 'view-news', 'update-news', 'delete-self-news', 'delete-news'
                             ],
                             'allow' => true,
                             'roles' => ['@'],
@@ -57,19 +58,22 @@ class CabinetController extends BaseController
     {
         return $this->render('index');
     }
-    protected function findModeNews($id)
-    {
-        if (($model = News::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
     public function actionNewsSelf()
     {
         $model = new News();
         return $this->render('../admin/newsAll',[
             'provider' => $model->getProvider(false)
         ]);
+    }
+    public function actionDeleteSelfNews($id)
+    {
+        $model = $this->findModeNews($id);
+        if($model->delete()):
+            Yii::$app->getSession()->setFlash('news_delete_ok', Yii::t('site','news_delete_ok'));
+            return $this->redirect(Url::toRoute('news-self'));
+        else:
+            Yii::$app->getSession()->setFlash('news_delete_err', Yii::t('site','news_delete_err'));
+            return $this->redirect(Url::toRoute('news-self'));
+        endif;
     }
 }

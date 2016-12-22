@@ -24,11 +24,15 @@ $no = Yii::$app->getSession()->getFlash('news_update_err');
 
     <p>
         <?= Html::a('Обновить', ['update-news', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?php if($params['block']):?>
-            <?= Html::a('Разблокировать', ['allow-news', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
-        <?php endif;?>
-        <?php if($params['active'] == true || $params['new'] == true):?>
-            <?= Html::a('Заблокировать', ['block-news', 'id' => $model->id], ['class' => 'btn btn-danger']) ?>
+        <?php if(!$params['user']): ?>
+            <?php if($params['block']):?>
+                <?= Html::a('Разблокировать', ['allow-news', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+            <?php endif;?>
+            <?php if($params['active'] == true || $params['new'] == true):?>
+                <?= Html::a('Заблокировать', ['block-news', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+            <?php endif;?>
+        <?php else:?>
+            <?= Html::a('Удалить', ['delete-self-news', 'id' => $model->id], ['class' => 'btn btn-danger']) ?>
         <?php endif;?>
     </p>
 
@@ -36,13 +40,16 @@ $no = Yii::$app->getSession()->getFlash('news_update_err');
         'model' => $model,
         'attributes' => [
             'user_id',
-            'moderator_id',
+            [
+                'label'=>'Модератор',
+                'value'=> $model->user->getEmail($model->moderator_id)
+            ],
             'created_at',
             'forbidden_at',
             'title',
             'text',
             [
-                'label'=>'status',
+                'label'=>'Статус',
                 'value'=> $model->getMyStatus($model->status)
             ],
         ],

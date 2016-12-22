@@ -40,21 +40,6 @@ use app\models\News;
                 }
             }
         ],
-        [
-            'class' => 'yii\grid\ActionColumn',
-            'header' => 'Одобрить',
-            'buttons' => [
-                'view' => function ($model, $key, $index) {
-                    $url = Url::toRoute('allow-news?id='.$key['id'].'');
-                    return Html::a('Одобрить', $url, [
-                        'title' => \Yii::t('yii', 'Одобрить'),
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                    ]);
-                }
-            ],
-            'template' => '{view}',
-        ],
         ['class' => 'yii\grid\ActionColumn',
             'header' => 'Действие',
             'buttons' => [
@@ -67,9 +52,18 @@ use app\models\News;
                     ]);
                 },
                 'update' => function ($model, $key, $index) {
-                    $url = Url::toRoute('block-news?id='.$key['id'].'');
-                    return Html::a('Заблокировать/', $url, [
-                        'title' => \Yii::t('yii', 'Заблокировать'),
+                    $action = '';
+                    $label = '';
+                    if($key->status == News::NEWS_NEW){
+                        $action = 'block-news';
+                        $label = 'Заблокировать';
+                    }else{
+                        $action = 'allow-news';
+                        $label = 'Одобрить';
+                    }
+                    $url = Url::toRoute($action.'?id='.$key['id'].'');
+                    return Html::a($label.'/', $url, [
+                        'title' => \Yii::t('yii', $label),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                     ]);

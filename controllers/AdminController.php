@@ -19,6 +19,7 @@ class AdminController extends BaseController
         $action = ['index', 'news-all', 'news-add', 'moderation', 'view-news', 'update-news', 'delete-news', 'block-news', 'allow-news'];
         if(Yii::$app->user->identity->role==User::ROLE_ADMIN) {
             $action[] = 'users';
+            $action[] = 'user-block';
             return [
                 'access' => [
                     'class' => AccessControl::className(),
@@ -85,13 +86,6 @@ class AdminController extends BaseController
             'provider' => $model->getProvider(true)
         ]);
     }
-    public function actionUsers()
-    {
-        $model = new User();
-        return $this->render('users',[
-            'provider' => $model->getProvider()
-        ]);
-    }
     public function actionModeration()
     {
         $model = new News();
@@ -99,5 +93,15 @@ class AdminController extends BaseController
             'provider' => $model->getProvider(true,true)
         ]);
     }
-
+    public function actionUsers()
+    {
+        $model = new User();
+        return $this->render('users',[
+            'provider' => $model->getProvider()
+        ]);
+    }
+    public function actionUserBlock($id)
+    {
+        var_dump('Изменить миграцию для блока бзера');
+    }
 }

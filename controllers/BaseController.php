@@ -39,10 +39,15 @@ class BaseController extends Controller
     protected function findModeNews($id)
     {
         if (($model = News::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            if(User::isUser()):
+                if($model->user_id == Yii::$app->user->identity->id):
+                    return $model;
+                endif;
+            elseif (User::isAdmin() || User::isModerator()):
+                return $model;
+            endif;
         }
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
     public function actionViewNews($id)
     {
@@ -50,9 +55,10 @@ class BaseController extends Controller
         $params = [
             'block' => ($model->status == News::NEWS_BLOCK) ? true : false,
             'active' => ($model->status == News::NEWS_ACTIVE) ? true : false,
-            'new' => ($model->status == News::NEWS_NEW) ? true : false
+            'new' => ($model->status == News::NEWS_NEW) ? true : false,
+            'user' => (User::isUser()) ? true : false,
         ];
-        return $this->render('viewNews', [
+        return $this->render('../admin/viewNews', [
             'model' => $model,
             'params' => $params
         ]);
@@ -81,13 +87,14 @@ class BaseController extends Controller
     public function actionDeleteNews($id)
     {
         $model = $this->findModeNews($id);
+        $url = (User::isUser()) ? 'news-self' : 'news-all';
         if(Yii::$app->request->isPost):
             if($model->delete()):
                 Yii::$app->getSession()->setFlash('news_delete_ok', Yii::t('site','news_delete_ok'));
-                return $this->redirect(Url::toRoute('news-all'));
+                return $this->redirect(Url::toRoute($url));
             else:
                 Yii::$app->getSession()->setFlash('news_delete_err', Yii::t('site','news_delete_err'));
-                return $this->redirect(Url::toRoute('news-all'));
+                return $this->redirect(Url::toRoute($url));
             endif;
         endif;
 
@@ -109,6 +116,7 @@ class BaseController extends Controller
     {
         $model = $this->findModeNews($id);
         $model->status = News::NEWS_ACTIVE;
+        $model->moderator_id = Yii::$app->user->identity->id;
         if($model->update()):
             Yii::$app->getSession()->setFlash('news_allow_ok', Yii::t('site','news_allow_ok'));
             return $this->redirect(Url::toRoute('news-all'));
