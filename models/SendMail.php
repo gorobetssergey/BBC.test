@@ -21,14 +21,14 @@ class SendMail extends Model
     {
         return [
             ['email','email'],
-            ['email','exist',
-                'targetClass' => User::className(),
+            ['email','exist','targetClass' => User::className(),
                 'filter' => [
                     'verificate' => User::NO_VERIFICATE
                 ],
                 'on' => 'registration',
                 'message' => 'email error'
-            ]
+            ],
+            ['email','exist','targetClass' => User::className(),'on' => 'newsmoderation','message' => 'email error']
         ];
     }
 
@@ -36,6 +36,7 @@ class SendMail extends Model
     {
         return [
             'registration' => ['email'],
+            'newsmoderation' => ['email'],
             'default' => parent::scenarios()
         ];
     }
@@ -67,5 +68,22 @@ class SendMail extends Model
                 ->setSubject(Yii::t('site','confirm_email'))
                 ->send();
         endif;
+    }
+
+    public function sendAll(array $params)
+    {
+        $messages = [];
+        $users = User::findAll(['role' => User::ROLE_USER]);
+        foreach ($users as $user) {
+            $messages[] = Yii::$app->mailer->compose('newsModeration',['id' => $params['id'],'user' => $user->email])
+                ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
+                ->setSubject(Yii::t('site','add_new_news').' "'.$params['title'].'"')
+                ->setTo($user->email);
+        }
+        if($this->validate()) {
+            return Yii::$app->mailer->sendMultiple($messages);
+        }else{
+            var_dump($this->errors);die();
+        }
     }
 }

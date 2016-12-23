@@ -50,6 +50,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     private $_hash;
     private $_model;
 
+    public $a = 15;
+
     /**
      * @inheritdoc
      */

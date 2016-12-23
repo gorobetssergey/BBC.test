@@ -105,6 +105,7 @@ class BaseController extends Controller
     {
         $model = $this->findModeNews($id);
         $model->status = News::NEWS_BLOCK;
+        $model->forbidden_at = date('Y-m-d H:m:i',strtotime('now'));
         if($model->update()):
             Yii::$app->getSession()->setFlash('news_block_ok', Yii::t('site','news_block_ok'));
             return $this->redirect(Url::toRoute('moderation'));
@@ -118,7 +119,10 @@ class BaseController extends Controller
         $model = $this->findModeNews($id);
         $model->status = News::NEWS_ACTIVE;
         $model->moderator_id = Yii::$app->user->identity->id;
+        $model->forbidden_at = date('Y-m-d H:m:i',strtotime('now'));
         if($model->update()):
+            $model->on(News::EVENT_NEWS_MODERATION_OK, [$model, 'newsModerationOk']);
+            $model->newsModeration();
             Yii::$app->getSession()->setFlash('news_allow_ok', Yii::t('site','news_allow_ok'));
             return $this->redirect(Url::toRoute('news-all'));
         else:

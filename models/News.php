@@ -21,6 +21,8 @@ use yii\data\ActiveDataProvider;
  */
 class News extends \yii\db\ActiveRecord
 {
+    const EVENT_NEWS_MODERATION_OK = 'newsModerationOk';
+
     const NEWS_NEW = 1;
     const NEWS_ACTIVE = 2;
     const NEWS_BLOCK = 3;
@@ -73,6 +75,19 @@ class News extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    public function newsModeration()
+    {
+        $this->trigger(self::EVENT_NEWS_MODERATION_OK);
+    }
+
+    public function newsModerationOk($event)
+    {
+        (new SendMail())->sendAll([
+            'id' => $event->sender->id,
+            'title' => $event->sender->title
+        ]);
     }
 
     private function getDataDefaul($params)
