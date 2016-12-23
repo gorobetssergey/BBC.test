@@ -48,11 +48,23 @@ class LoginForm extends Model
     {
         if($this->getUser()):
             if($this->_user->verificate != User::IS_VERIFICATE):
+                $this->errLog($this->_user);
                 $this->addError('username', 'Подтвердите свою почту');
+                return false;
+            endif;
+            if($this->_user->block == User::BLOCK):
+                $this->errLog($this->_user);
+                $this->addError('username', 'Акаунт заблокирован');
                 return false;
             endif;
         endif;
         return true;
+    }
+
+    private function errLog($model)
+    {
+        $model->on(User::EVENT_ERROR_LOGIN, [$model, 'userErorLogin']);
+        $model->erorlogin();
     }
 
     public function validatePassword($attribute, $params)

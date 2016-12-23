@@ -108,6 +108,13 @@ class SiteController extends BaseController
         return $this->goHome();
     }
 
+    public static function logout()
+    {
+        Yii::$app->getResponse()->redirect(Yii::$app->getHomeUrl());
+        User::auth(false);
+        Yii::$app->user->logout();
+    }
+
     public function actionRegistration()
     {
         $model = new User(['scenario' => 'registration']);

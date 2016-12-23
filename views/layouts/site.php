@@ -53,6 +53,8 @@ AppAsset::register($this);
             $menuItems[] = [
                 'label' => 'Админка', 'url' => ['/admin/index'],
                 ];
+    endif;
+    if(!Yii::$app->user->isGuest)
         $menuItems[]=[
             'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',
             'url' => ['/site/logout'],
@@ -60,7 +62,6 @@ AppAsset::register($this);
                 'data-method' => 'post'
             ]
         ];
-    endif;
 
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],

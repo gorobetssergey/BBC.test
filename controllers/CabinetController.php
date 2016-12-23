@@ -9,15 +9,17 @@ use app\models\User;
 use Yii;
 use yii\helpers\Url;
 
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-
 class CabinetController extends BaseController
 {
     public $layout = 'cabinet';
 
     public function behaviors() {
         if(Yii::$app->user->identity->role==User::ROLE_USER) {
+            if(Yii::$app->user->identity->block){
+                $user = new User();
+                $user->on(User::EVENT_BLOCK, ['app\controllers\SiteController', 'logout']);
+                $user->userblock();
+        }
             return [
                 'access' => [
                     'class' => AccessControl::className(),
@@ -53,7 +55,6 @@ class CabinetController extends BaseController
             ];
         }
     }
-
     public function actionIndex()
     {
         return $this->render('index');

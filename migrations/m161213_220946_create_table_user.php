@@ -17,6 +17,7 @@ class m161213_220946_create_table_user extends Migration
             'role' => $this->integer()->defaultValue(1),
             'created' => $this->dateTime()->notNull(),
             'auth' => $this->boolean()->defaultValue(false),
+            'block' => $this->boolean()->defaultValue(false),
             'login_error' => $this->integer(1)->defaultValue(0)
         ]);
 

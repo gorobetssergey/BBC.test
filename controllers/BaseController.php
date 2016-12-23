@@ -18,6 +18,7 @@ use yii\web\NotFoundHttpException;
 
 class BaseController extends Controller
 {
+
     public function actionNewsAdd()
     {
         $model = new News();

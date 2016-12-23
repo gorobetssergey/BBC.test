@@ -57,9 +57,9 @@ use app\models\News;
                     if($key->status == News::NEWS_NEW){
                         $action = 'block-news';
                         $label = 'Заблокировать';
-                    }else{
+                    }elseif($key->status == News::NEWS_BLOCK){
                         $action = 'allow-news';
-                        $label = 'Одобрить';
+                        $label = 'Разблокировать';
                     }
                     $url = Url::toRoute($action.'?id='.$key['id'].'');
                     return Html::a($label.'/', $url, [

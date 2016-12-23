@@ -31,6 +31,9 @@ $no = Yii::$app->getSession()->getFlash('news_update_err');
             <?php if($params['active'] == true || $params['new'] == true):?>
                 <?= Html::a('Заблокировать', ['block-news', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?php endif;?>
+            <?php if($params['new'] == true):?>
+                <?= Html::a('Одобрить', ['allow-news', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+            <?php endif;?>
         <?php else:?>
             <?= Html::a('Удалить', ['delete-self-news', 'id' => $model->id], ['class' => 'btn btn-danger']) ?>
         <?php endif;?>
