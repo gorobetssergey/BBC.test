@@ -40,6 +40,7 @@ AppAsset::register($this);
         $menuItems =[
             ['label' => 'Добавить новость','url' => ['/cabinet/news-add']],
             ['label' => 'Мои новости','url' => ['/cabinet/news-self']],
+            ['label' => 'Настройки','url' => ['/cabinet/profile']],
         ];
         $menuItems[]=[
             'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',

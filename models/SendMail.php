@@ -73,12 +73,16 @@ class SendMail extends Model
     public function sendAll(array $params)
     {
         $messages = [];
-        $users = User::findAll(['role' => User::ROLE_USER]);
+        $users = Profile::find()
+            ->joinWith('user0')
+            ->where(['user.role' => User::ROLE_USER])
+            ->andWhere(['profile.email' => Profile::NOTICE])
+            ->all();
         foreach ($users as $user) {
-            $messages[] = Yii::$app->mailer->compose('newsModeration',['id' => $params['id'],'user' => $user->email])
+            $messages[] = Yii::$app->mailer->compose('newsModeration',['id' => $params['id'],'user' => $user->user0->email])
                 ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
                 ->setSubject(Yii::t('site','add_new_news').' "'.$params['title'].'"')
-                ->setTo($user->email);
+                ->setTo($user->user0->email);
         }
         if($this->validate()) {
             return Yii::$app->mailer->sendMultiple($messages);
