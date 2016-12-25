@@ -22,6 +22,7 @@ use yii\data\ActiveDataProvider;
 class News extends \yii\db\ActiveRecord
 {
     const EVENT_NEWS_MODERATION_OK = 'newsModerationOk';
+    const EVENT_CHECK_USER_NEWS = 'checkuserNews';
 
     const NEWS_NEW = 1;
     const NEWS_ACTIVE = 2;
@@ -84,10 +85,22 @@ class News extends \yii\db\ActiveRecord
 
     public function newsModerationOk($event)
     {
+        $this->checkuserNews($event->sender->id);
         (new SendMail())->sendAll([
             'id' => $event->sender->id,
             'title' => $event->sender->title
         ]);
+    }
+
+    public function checkuserNews($id)
+    {
+        $user = Profile::findAll(['window' => Profile::NOTICE]);
+        foreach ($user as $item) {
+            $data = new CheckUserNews();
+            $data->user = $item->user;
+            $data->news = $id;
+            $data->save();
+        }
     }
 
     private function getDataDefaul($params)
@@ -126,6 +139,7 @@ class News extends \yii\db\ActiveRecord
         ]);
         return $dataProvider;
     }
+
     public function getMyStatus($status) {
         if($status == News::NEWS_ACTIVE):
             return Yii::t('site','news_active');

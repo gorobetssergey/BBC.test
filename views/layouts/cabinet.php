@@ -9,6 +9,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use app\models\User;
+use yii\bootstrap\Modal;
 
 AppAsset::register($this);
 ?>
@@ -65,7 +66,6 @@ AppAsset::register($this);
         <?= $content ?>
     </div>
 </div>
-
 <footer class="footer">
     <div class="container">
         <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
@@ -73,8 +73,32 @@ AppAsset::register($this);
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
 </footer>
-
-<?php $this->endBody() ?>
+<?php
+if(Yii::$app->params['checkNews'] != ''){
+    Modal::begin([
+        'header'=>'<h3 class="text-center">У вас есть непрочитанные новости ('.Yii::$app->params['checkNews'].')</h3>',
+        'toggleButton' => [
+            'id' => 'new_news',
+            'class' => 'hidden'
+        ],
+        'size'=>'modal-lg'
+    ]);
+    echo Html::a(
+        'Перейти к новостям',
+        [\yii\helpers\Url::toRoute('check-news')],
+        [
+            'class'=>'btn btn-primary btn-block',
+            'style'=>'color:white',
+        ]
+    );
+    Modal::end();
+$script = <<< JS
+            $('#new_news').click();
+JS;
+        $this->registerJs($script, yii\web\View::POS_END);
+}
+$this->endBody()
+?>
 </body>
 </html>
 <?php $this->endPage() ?>
