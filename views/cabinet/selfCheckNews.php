@@ -19,15 +19,23 @@ use app\models\News;
             'header' => 'Действие',
             'buttons' => [
                 'view' => function ($model, $key, $index) {
-                    $url = Url::toRoute('view-news?id='.$key['id'].'');
-                    return Html::a('Ппометить', $url, [
-                        'title' => \Yii::t('yii', 'Ппометить'),
+                    $url = Url::toRoute('check-view-news?id='.$key['id'].'');
+                    return Html::a('Пометить как прочитанное/', $url, [
+                        'title' => \Yii::t('yii', 'Пометить как прочитанное'),
+                        'data-method' => 'post',
+                        'data-pjax' => '0',
+                    ]);
+                },
+                'update' => function ($model, $key, $index) {
+                    $url = Url::toRoute('self-view-news?id='.$key['id'].'');
+                    return Html::a('Просмотреть', $url, [
+                        'title' => \Yii::t('yii', 'Просмотреть'),
                         'data-method' => 'post',
                         'data-pjax' => '0',
                     ]);
                 },
             ],
-            'template' => '{view}'
+            'template' => '{view} {update}'
         ],
     ],
 ]); ?>

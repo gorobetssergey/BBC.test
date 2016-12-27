@@ -29,7 +29,7 @@ class CabinetController extends BaseController
                     'rules' => [
                         [
                             'actions' => [
-                                'index', 'news-add', 'news-self', 'view-news', 'update-news', 'delete-self-news', 'delete-news', 'profile', 'check-news'
+                                'index', 'news-add', 'news-self', 'view-news', 'update-news', 'delete-self-news', 'delete-news', 'profile', 'check-news', 'check-view-news','self-view-news'
                             ],
                             'allow' => true,
                             'roles' => ['@'],
@@ -123,5 +123,24 @@ class CabinetController extends BaseController
         return $this->render('selfCheckNews',[
             'provider' => $model->getProviderSelf()
         ]);
+    }
+
+    public function actionCheckViewNews($id)
+    {
+        var_dump($id);die();
+        $model = $this->findModeNewstoView($id);
+
+    }
+    public function actionSelfViewNews($id)
+    {
+        $model = $this->findModeNewstoView($id);
+        var_dump($model);
+
+    }
+    protected function findModeNewstoView($id)
+    {
+        if (($model = News::findOne($id)) !== null)
+                return $model;
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }
