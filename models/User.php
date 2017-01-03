@@ -236,6 +236,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         $this->password = $this->_hash;
     }
 
+    public static function isAuth()
+    {
+        return !Yii::$app->user->isGuest && Yii::$app->user->identityClass == 'app\models\User';
+    }
+
     public function registration()
     {
         list($user, $pass) = explode("@", $this->email);

@@ -9,6 +9,7 @@
 namespace app\controllers;
 
 
+use app\models\CheckUserNews;
 use app\models\News;
 use app\models\User;
 use yii\helpers\Url;
@@ -37,12 +38,14 @@ class BaseController extends Controller
             'model' => $model
         ]);
     }
-    protected function findModeNews($id)
+    protected function findModeNews($id, $params = null)
     {
         if (($model = News::findOne($id)) !== null) {
             if(User::isUser()):
-                if($model->user_id == Yii::$app->user->identity->id):
+                if($model->user_id == Yii::$app->user->identity->id || ($params === null && $model->status == News::NEWS_ACTIVE)):
                     return $model;
+                else:
+                    throw new NotFoundHttpException('Errors news');
                 endif;
             elseif (User::isAdmin() || User::isModerator()):
                 return $model;
@@ -50,8 +53,19 @@ class BaseController extends Controller
         }
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    protected function checkUserNewsModel($id)
+    {
+        if (($checkNews = CheckUserNews::findOne(['user'=>Yii::$app->user->identity->id,'news' => $id])) !== null) {
+            return $checkNews;
+        }else{
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
     public function actionViewNews($id)
     {
+        $checkNews = $this->checkUserNewsModel($id);
+        if($checkNews->id > 0)
+            $checkNews->delete();
         $model = $this->findModeNews($id);
         $params = [
             'block' => ($model->status == News::NEWS_BLOCK) ? true : false,

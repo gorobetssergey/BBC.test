@@ -61,8 +61,7 @@ class AdminController extends BaseController
                 ],
 
             ];
-        }
-        else{
+        }else{
             return [
                 'access' => [
                     'rules' => [

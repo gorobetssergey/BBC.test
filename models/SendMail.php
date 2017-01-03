@@ -76,7 +76,7 @@ class SendMail extends Model
         $users = Profile::find()
             ->joinWith('user0')
             ->where(['user.role' => User::ROLE_USER])
-            ->andWhere(['profile.email' => Profile::NOTICE])
+            ->andWhere(['or', ['profile.email' => Profile::NOTICE],['all' => Profile::NOTICE]])
             ->all();
         foreach ($users as $user) {
             $messages[] = Yii::$app->mailer->compose('newsModeration',['id' => $params['id'],'user' => $user->user0->email])

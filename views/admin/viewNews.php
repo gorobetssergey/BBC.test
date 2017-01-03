@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use app\models\News;
+use app\models\User;
 
 $ok = Yii::$app->getSession()->getFlash('news_update_ok');
 $no = Yii::$app->getSession()->getFlash('news_update_err');
@@ -21,7 +22,9 @@ $no = Yii::$app->getSession()->getFlash('news_update_err');
         </div>
     <?php endif;?>
     <h1><?= Html::encode($this->title) ?></h1>
-
+<?php
+    if($model->user == Yii::$app->user->identity->id || (User::isAdmin() || User::isModerator())){
+?>
     <p>
         <?= Html::a('Обновить', ['update-news', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?php if(!$params['user']): ?>
@@ -38,6 +41,8 @@ $no = Yii::$app->getSession()->getFlash('news_update_err');
             <?= Html::a('Удалить', ['delete-self-news', 'id' => $model->id], ['class' => 'btn btn-danger']) ?>
         <?php endif;?>
     </p>
+
+    <?php }?>
 
     <?= DetailView::widget([
         'model' => $model,

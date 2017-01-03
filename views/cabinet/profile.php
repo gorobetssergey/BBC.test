@@ -29,7 +29,7 @@ $no = Yii::$app->getSession()->getFlash('profile_no');
             <?= $form->field($model, 'name[]')->radio(['label'=>Yii::t('site','news_no')])->label(false); ?>
         </div>
         <div class="form-group">
-            <?= Html::submitButton(Yii::t('site', 'add_news'), ['class' => 'btn btn-primary']) ?>
+            <?= Html::submitButton(Yii::t('site', 'change_profile'), ['class' => 'btn btn-primary']) ?>
         </div>
         <?php ActiveForm::end(); ?>
     </div>

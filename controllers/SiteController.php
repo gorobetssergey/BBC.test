@@ -2,11 +2,11 @@
 
 namespace app\controllers;
 
+use app\models\News;
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\filters\VerbFilter;
-use app\models\{LoginForm,ContactForm,User};
+use app\models\{LoginForm,User};
 use yii\helpers\Url;
 
 class SiteController extends BaseController
@@ -59,9 +59,14 @@ class SiteController extends BaseController
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($count = News::COUNT_NEWS)
     {
-        return $this->render('index');
+        $model = (new News())->getNewsActive($count);
+        return $this->render('index',[
+            'models' => $model['models'],
+            'pages' => $model['pages'],
+            'statususer' => User::isAuth()
+        ]);
     }
     /**
      * Login action.
@@ -139,5 +144,16 @@ class SiteController extends BaseController
                 die();
         }
         return $this->redirect(Url::toRoute('cabinet/index'));
+    }
+
+    public function actionNewsView($id)
+    {
+        $data = '';
+        if(User::isAuth()) {
+            $data = (new News())->getNewsAllActive($this->findModeNews($id));
+        }else{
+            $data = 'для просмотра новости авторизируйся';
+        }
+        return $this->render('newsperson', ['items' => $data]);
     }
 }

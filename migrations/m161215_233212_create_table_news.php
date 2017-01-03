@@ -12,7 +12,7 @@ class m161215_233212_create_table_news extends Migration
             'moderator_id' => $this->integer(11)->defaultValue(null),
             'created_at' => $this->dateTime()->notNull(),
             'forbidden_at' => $this->dateTime()->defaultValue(null),
-            'title' => $this->string(255)->notNull(),
+            'title' => $this->string(255)->notNull()->unique(),
             'text' => $this->text()->notNull(),
             'status' => $this->integer(11)->notNull(),
         ]);

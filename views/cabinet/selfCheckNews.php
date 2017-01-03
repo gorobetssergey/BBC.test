@@ -19,7 +19,7 @@ use app\models\News;
             'header' => 'Действие',
             'buttons' => [
                 'view' => function ($model, $key, $index) {
-                    $url = Url::toRoute('check-view-news?id='.$key['id'].'');
+                    $url = Url::toRoute('check-view-news?id='.$key['news'].'');
                     return Html::a('Пометить как прочитанное/', $url, [
                         'title' => \Yii::t('yii', 'Пометить как прочитанное'),
                         'data-method' => 'post',
@@ -27,7 +27,7 @@ use app\models\News;
                     ]);
                 },
                 'update' => function ($model, $key, $index) {
-                    $url = Url::toRoute('self-view-news?id='.$key['id'].'');
+                    $url = Url::toRoute('view-news?id='.$key['news'].'');
                     return Html::a('Просмотреть', $url, [
                         'title' => \Yii::t('yii', 'Просмотреть'),
                         'data-method' => 'post',

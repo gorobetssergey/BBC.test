@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 
 /**
  * This is the model class for table "news".
@@ -28,6 +29,9 @@ class News extends \yii\db\ActiveRecord
     const NEWS_ACTIVE = 2;
     const NEWS_BLOCK = 3;
 
+    const COUNT_PREWU = 5;
+    const COUNT_NEWS = 2;
+
     public $allow;
     /**
      * @inheritdoc
@@ -45,6 +49,7 @@ class News extends \yii\db\ActiveRecord
         return [
             [['user_id', 'created_at', 'title', 'text', 'status'], 'required'],
             [['user_id', 'moderator_id', 'status'], 'integer'],
+            ['title','unique'],
             [['created_at', 'forbidden_at'], 'safe'],
             [['text'], 'string', 'max' => 5000],
             [['title'], 'string', 'max' => 255],
@@ -106,7 +111,7 @@ class News extends \yii\db\ActiveRecord
     private function getDataDefaul($params)
     {
         $this->status = ($params) ? self::NEWS_ACTIVE : self::NEWS_NEW;
-        $this->created_at = date('Y-m-d H:m:i', strtotime('now'));
+        $this->created_at = date('Y-m-d H:i:s', strtotime('now'));
         $this->user_id = Yii::$app->user->identity->id;
         if($params):
             $this->forbidden_at = $this->created_at;
@@ -155,5 +160,41 @@ class News extends \yii\db\ActiveRecord
         if($model != null)
             return $model;
         return null;
+    }
+    public static function getNewsPrewu($text)
+    {
+        $pieces = explode(" ", $text);
+        $items = '';
+        for($i = 0; $i<=self::COUNT_PREWU; $i++){
+            $items .= ($pieces[$i].' ');
+        }
+        return $items;
+    }
+    public function getnewsActive($prevu = self::COUNT_NEWS)
+    {
+        $query = self::find()->where(['status' => News::NEWS_ACTIVE]);
+
+        $pages = new Pagination([
+            'defaultPageSize' => $prevu,
+            'totalCount' => $query->count()
+        ]);
+        $models = $query->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        $arr =[
+            'models' => $models,
+            'pages' => $pages,
+        ];
+        return $arr;
+    }
+    public function getNewsAllActive($arr)
+    {
+        $items = [
+            'title' => $arr->title,
+            'date' => $arr->created_at,
+            'text' => $arr->text
+        ];
+        return $items;
     }
 }
