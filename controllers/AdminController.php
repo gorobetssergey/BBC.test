@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\CheckAdminUser;
 use app\models\News;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -18,9 +19,13 @@ class AdminController extends BaseController
     public function behaviors() {
         $action = ['index', 'news-all', 'news-add', 'moderation', 'view-news', 'update-news', 'delete-news', 'block-news', 'allow-news'];
         if(Yii::$app->user->identity->role==User::ROLE_ADMIN) {
-            $admin = ['users', 'user-block', 'user-unblock'];
+            $admin = ['users', 'user-block', 'user-unblock', 'users-new', 'user-admin-check'];
             foreach ($admin as $item) {
                 $action[] = $item;
+            }
+            $count = (new CheckAdminUser())->getAll();
+            if($count > 0){
+                Yii::$app->params['checkUser'] = $count;
             }
             return [
                 'access' => [
@@ -97,8 +102,23 @@ class AdminController extends BaseController
     public function actionUsers()
     {
         $model = new User();
+        if(!empty(Yii::$app->request->post("User")["repeat_password"])):
+            $post = Yii::$app->request->post();
+            $model->setScenario('adminregistration');
+            if($model->load($post) && $model->validate()):
+                if($user = $model->registration()):
+                    Yii::$app->getSession()->setFlash('registration_ok', Yii::t('site', 'registration_ok'));
+                    return $this->refresh();
+                else:
+                    Yii::$app->getSession()->setFlash('registration_err', Yii::t('site', 'registration_err'));
+                endif;
+            else:
+                Yii::$app->getSession()->setFlash('registration_no', Yii::t('site', 'registration_no'));
+            endif;
+        endif;
         return $this->render('users',[
-            'provider' => $model->getProvider()
+            'provider' => $model->getProvider(),
+            'model' => $model
         ]);
     }
     private function findModelUser($id)
@@ -124,6 +144,7 @@ class AdminController extends BaseController
 
         return $this->redirect(Url::toRoute('users'));
     }
+
     public function actionUserUnblock($id)
     {
         $user = $this->findModelUser($id);
@@ -138,5 +159,28 @@ class AdminController extends BaseController
         endif;
 
         return $this->redirect(Url::toRoute('users'));
+    }
+
+    public function actionUsersNew()
+    {
+        $model = new CheckAdminUser();
+        return $this->render('usersNew',[
+            'provider' => $model->getProvider(),
+            'model' => $model
+        ]);
+    }
+
+    public function actionUserAdminCheck($id)
+    {
+        $model = CheckAdminUser::findOne($id);
+        if($model != null){
+            if($model->delete()){
+                Yii::$app->getSession()->setFlash('user_admin_ok', Yii::t('site','user_admin_ok'));
+                return $this->redirect(Url::toRoute('users'));
+            }else{
+                Yii::$app->getSession()->setFlash('user_admin_no', Yii::t('site','user_admin_no'));
+                return $this->refresh();
+            }
+        }
     }
 }

@@ -42,6 +42,8 @@ AdminAsset::register($this);
     ];
     if (Yii::$app->user->identity->role==User::ROLE_ADMIN):
         $menuItems[] =['label' => 'Пользователи','url' => ['/admin/users']];
+        if(Yii::$app->params['checkUser'] > 0)
+            $menuItems[] =['label' => 'Новые Пользователи('.Yii::$app->params['checkUser'].')','url' => ['/admin/users-new']];
     endif;
     $menuItems[]=[
         'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',

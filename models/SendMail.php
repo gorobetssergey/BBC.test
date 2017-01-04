@@ -70,6 +70,23 @@ class SendMail extends Model
         endif;
     }
 
+    public function sendUpdatePassword(array $params)
+    {
+        return Yii::$app->mailer->compose('updatepassword',['user' => $params['emailTo'],'password'=> $params['text']])
+            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
+            ->setTo($params['emailTo'])
+            ->setSubject('Измененине пароля')
+            ->send();
+    }
+    public function sendAdminRegister(array $params)
+    {
+        return Yii::$app->mailer->compose('userAdminRegistration',['user' => $params['emailTo']])
+            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
+            ->setTo($params['emailTo'])
+            ->setSubject(Yii::t('site','confirm_email'))
+            ->send();
+    }
+
     public function sendAll(array $params)
     {
         $messages = [];

@@ -58,7 +58,7 @@ class BaseController extends Controller
         if (($checkNews = CheckUserNews::findOne(['user'=>Yii::$app->user->identity->id,'news' => $id])) !== null) {
             return $checkNews;
         }else{
-            throw new NotFoundHttpException('The requested page does not exist.');
+            return null;
         }
     }
     public function actionViewNews($id)

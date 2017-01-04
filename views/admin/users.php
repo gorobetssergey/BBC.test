@@ -2,38 +2,65 @@
 use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
+$ok_admin = Yii::$app->getSession()->getFlash('user_admin_ok');
 
 $ok = Yii::$app->getSession()->getFlash('user_block_ok');
 $no = Yii::$app->getSession()->getFlash('user_block_err');
 $ok_un = Yii::$app->getSession()->getFlash('user_unblock_ok');
 $no_un = Yii::$app->getSession()->getFlash('user_unblock_err');
+$ok_reg = Yii::$app->getSession()->getFlash('registration_ok');
+$no_reg = Yii::$app->getSession()->getFlash('registration_err');
+$no_reg_err = Yii::$app->getSession()->getFlash('registration_no');
+$res_ok = '';
+$style = '';
+$arr = [$ok,$no,$ok_un,$no_un,$ok_reg,$no_reg,$no_reg_err,$ok_admin];
+$style_arr = ['alert-success' ,'alert-danger', 'alert-success', 'alert-danger' ,'alert-success' ,'alert-danger', 'alert-danger', 'alert-success'];
+for($i = 0; $i<count($arr);$i++) {
+    if($arr{$i}){
+        $res_ok = $arr{$i};
+        $style = $style_arr[$i];
+        break;
+    }
+}
 ?>
 <div class="row">
     <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-        <?php if($ok):?>
-            <div class="alert alert-success alert-dismissible" role="alert">
+        <?php if($res_ok):?>
+            <div class="alert <?=$style?> alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <strong><?=$ok?></strong>
+                <strong><?=$res_ok?></strong>
             </div>
         <?php endif;?>
-        <?php if($no):?>
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <strong><?=$no?></strong>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <h4>Добавить пользователя</h4>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <?php $form = ActiveForm::begin(); ?>
+
+                        <?= $form->field($model, 'email')->textInput() ?>
+
+                        <?= $form->field($model, 'password')->passwordInput() ?>
+
+                        <?= $form->field($model, 'repeat_password')->passwordInput() ?>
+
+                        <?= Html::submitButton('Добавитть', ['class' => 'btn btn-primary']) ?>
+
+                        <?php ActiveForm::end(); ?>
+                    </div>
+                </div>
             </div>
-        <?php endif;?>
-        <?php if($ok_un):?>
-            <div class="alert alert-success alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <strong><?=$ok_un?></strong>
-            </div>
-        <?php endif;?>
-        <?php if($no_un):?>
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <strong><?=$no_un?></strong>
-            </div>
-        <?php endif;?>
+        </div>
+        <h4>Пользователи</h4>
+
         <?= GridView::widget([
             'dataProvider' => $provider,
             'columns' => [
@@ -66,7 +93,7 @@ $no_un = Yii::$app->getSession()->getFlash('user_unblock_err');
                 'login_error',
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'header' => 'Заблокировать',
+                    'header' => 'Действие',
                     'buttons' => [
                         'view' => function ($model, $key, $index) {
                             $goo = '';

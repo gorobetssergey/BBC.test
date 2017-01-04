@@ -29,7 +29,8 @@ class CabinetController extends BaseController
                     'rules' => [
                         [
                             'actions' => [
-                                'index', 'news-add', 'news-self', 'view-news', 'update-news', 'delete-self-news', 'delete-news', 'profile', 'check-news', 'check-view-news','self-view-news', 'view-news'
+                                'index', 'news-add', 'news-self', 'view-news', 'update-news', 'delete-self-news', 'delete-news', 'profile', 'check-news', 'check-view-news','self-view-news', 'view-news',
+                                'change-password'
                             ],
                             'allow' => true,
                             'roles' => ['@'],
@@ -104,6 +105,7 @@ class CabinetController extends BaseController
         }
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
     public function actionProfile()
     {
         $model = $this->findModelProfile();
@@ -120,6 +122,31 @@ class CabinetController extends BaseController
         return $this->render('profile',[
             'model' => $model,
             'status' => $model->getStatus()
+        ]);
+    }
+    private function findModelUser()
+    {
+        if (($model = User::findOne(['id' => Yii::$app->user->identity->id])) !== null) {
+                    return $model;
+        }
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionChangePassword()
+    {
+        $password = $this->findModelUser();
+        $password->setScenario('newpassword');
+        if(Yii::$app->request->isPost):
+            $post = Yii::$app->request->post();
+            if($password->load($post) && $password->validate()):
+                Yii::$app->getSession()->setFlash('profile_ok', Yii::t('site','profile_ok'));
+                return $this->refresh();
+            else:
+                Yii::$app->getSession()->setFlash('profile_no', Yii::t('site','profile_no'));
+
+            endif;
+        endif;
+        return $this->render('password',[
+            'password' => $password
         ]);
     }
     public function actionCheckNews()

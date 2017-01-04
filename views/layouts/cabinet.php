@@ -42,6 +42,7 @@ AppAsset::register($this);
             ['label' => 'Добавить новость','url' => ['/cabinet/news-add']],
             ['label' => 'Мои новости','url' => ['/cabinet/news-self']],
             ['label' => 'Настройки','url' => ['/cabinet/profile']],
+            ['label' => 'Сменить пароль','url' => ['/cabinet/change-password']],
         ];
         $menuItems[]=[
             'label' => 'Выйти (' . Yii::$app->user->identity->email . ')',
