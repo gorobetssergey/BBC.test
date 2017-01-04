@@ -30,7 +30,7 @@ class News extends \yii\db\ActiveRecord
     const NEWS_BLOCK = 3;
 
     const COUNT_PREWU = 5;
-    const COUNT_NEWS = 2;
+    const COUNT_NEWS = 5;
 
     public $allow;
     /**
@@ -170,7 +170,7 @@ class News extends \yii\db\ActiveRecord
         }
         return $items;
     }
-    public function getnewsActive($prevu = self::COUNT_NEWS)
+    public function getnewsActive($prevu)
     {
         $query = self::find()->where(['status' => News::NEWS_ACTIVE]);
 

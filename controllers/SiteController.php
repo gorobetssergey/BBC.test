@@ -61,11 +61,35 @@ class SiteController extends BaseController
      */
     public function actionIndex($count = News::COUNT_NEWS)
     {
+        $arr = [];
+        $s = $count;
+        $session = Yii::$app->session;
+        for($i = 0,$y=0; $i<=100; $i+=5,$y++){
+            $arr[$y]=$i;
+            if($i == $count)
+                $s = $y;
+        }
+        if(Yii::$app->request->isPost){
+            $session->set('countToPage', Yii::$app->request->post()['count']);
+            $s = $session->get('countToPage');
+            $count = $arr[$s];
+        }elseif(!empty(Yii::$app->request->get('page'))){
+            $c = $session->get('countToPage') ?? News::COUNT_NEWS;
+            $count = $arr[$c];
+            for($i = 0,$y=0; $i<=100; $i+=5,$y++){
+                if($i == $count)
+                    $s = $y;
+            }
+        }
+
         $model = (new News())->getNewsActive($count);
+
         return $this->render('index',[
             'models' => $model['models'],
             'pages' => $model['pages'],
-            'statususer' => User::isAuth()
+            'statususer' => User::isAuth(),
+            'arr' => $arr,
+            's' => $s
         ]);
     }
     /**
