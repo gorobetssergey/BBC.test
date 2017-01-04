@@ -17,7 +17,7 @@ $this->registerJs(
     });'
 );
 ?>
-
+<?php if($models != null): ?>
 <div class="row">
     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-2" id = 'new_note'>
         <div class="notes-form">
@@ -32,7 +32,7 @@ $this->registerJs(
         </div>
     </div>
 </div>
-
+<?php endif; ?>
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="notes">
         <?php if($models != null): ?>

@@ -27,6 +27,10 @@ class BaseController extends Controller
             $params = User::getStatus();
             $post = Yii::$app->request->post();
             if($model->load($post) && $model->saves($params)):
+                if(User::isAdmin() || User::isModerator()){
+                    $model->on(News::EVENT_NEWS_MODERATION_OK, [$model, 'newsModerationOk']);
+                    $model->newsModeration();
+                }
                 Yii::$app->getSession()->setFlash('news_add_ok', Yii::t('site','news_add'));
                 return (Yii::$app->user->identity->role == User::ROLE_USER) ? $this->redirect(Url::toRoute('cabinet/news-self')) : $this->refresh();
             else:
@@ -85,7 +89,7 @@ class BaseController extends Controller
             if($model->user_id != Yii::$app->user->identity->id)
                 $model->moderator_id = Yii::$app->user->identity->id;
             $post = Yii::$app->request->post();
-            $model->forbidden_at = date('Y-m-d H:m:i',strtotime('now'));
+            $model->forbidden_at = date('Y-m-d H:i:s',strtotime('now'));
             if($model->load($post) && $model->update()) {
                 Yii::$app->getSession()->setFlash('news_update_ok', Yii::t('site', 'news_update_ok'));
                 return $this->redirect(Url::toRoute('view-news?id=' . $id));
@@ -119,7 +123,7 @@ class BaseController extends Controller
     {
         $model = $this->findModeNews($id);
         $model->status = News::NEWS_BLOCK;
-        $model->forbidden_at = date('Y-m-d H:m:i',strtotime('now'));
+        $model->forbidden_at = date('Y-m-d H:i:s',strtotime('now'));
         if($model->update()):
             Yii::$app->getSession()->setFlash('news_block_ok', Yii::t('site','news_block_ok'));
             return $this->redirect(Url::toRoute('moderation'));
@@ -133,7 +137,7 @@ class BaseController extends Controller
         $model = $this->findModeNews($id);
         $model->status = News::NEWS_ACTIVE;
         $model->moderator_id = Yii::$app->user->identity->id;
-        $model->forbidden_at = date('Y-m-d H:m:i',strtotime('now'));
+        $model->forbidden_at = date('Y-m-d H:i:s',strtotime('now'));
         if($model->update()):
             $model->on(News::EVENT_NEWS_MODERATION_OK, [$model, 'newsModerationOk']);
             $model->newsModeration();
